@@ -973,6 +973,262 @@ Investigate failing payment webhook in @file:logs/webhook_errors.log.
 
 ---
 
+## Chapter 16: Cloud Deployment, Production Architectures & Hosting Platforms
+
+### 16.1 The Paradigm Shift: From Local Pair to Cloud-Native Autonomous Agent
+While running Antigravity inside a local IDE provides immense developer productivity, the true horizon of autonomous software engineering is unlocked when agents operate continuously in the cloud. Cloud-deployed agents function as autonomous site reliability engineers, 24/7 security auditors, omnichannel triage bots, and persistent PR reviewers.
+
+Operating in production requires decoupling the agent's **execution runtime** from the **state store**:
+
+```
+[Inbound Events (Webhooks/Queues)] ──> [Stateless Container Cluster (Cloud Run/Fly/Railway)] <──> [Persistent Brain Store (EFS/GCS/NVMe)]
+```
+
+> 💡 **Concept: Stateful Brain vs. Stateless Compute**
+>
+> Antigravity stores conversation transcripts, plans, artifacts, and execution scratch files inside the Brain directory (`/var/data/antigravity/brain`). In ephemeral container environments (such as Cloud Run or AWS Fargate), compute instances can be recycled or scaled down at any moment.
+> 1. **Ephemeral Sandboxes**: Scratch execution directories (`/tmp` and `workspace/`) should be treated as ephemeral and discarded after a session.
+> 2. **Durable Brain Persistence**: Mount a persistent cloud volume (GCP Cloud Storage FUSE, AWS EFS, or Fly.io Volume) to `ANTIGRAVITY_DATA_DIR` so agent memories and audit trails survive container recycling.
+
+---
+
+### 16.2 Containerizing Antigravity: The Hardened Production Dockerfile
+Deploying an AI agent capable of executing shell commands and running browser subagents requires a carefully hardened container environment:
+1. **Non-Root Security**: Never run the container daemon as `root`. Drop all capabilities (`--cap-drop=ALL`) and assign a dedicated `antigravity` user (UID 1001).
+2. **Headless Browser Dependencies**: Browser subagents require Chromium, font packages, and a virtual framebuffer (`xvfb`) to render and capture DOM interactions without a physical display.
+3. **Signal Handling**: Node.js and Python processes running as PID 1 often ignore `SIGTERM`. Wrapping the entrypoint with `dumb-init` ensures that shutdown signals are propagated gracefully, allowing running agent loops to checkpoint their state before termination.
+
+```dockerfile
+# Multi-stage production container for Antigravity Cloud Services
+FROM node:20-slim AS base
+
+# Install OS libraries for headless browser subagents (Chromium, xvfb, fonts)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 python3-pip python3-venv curl git ca-certificates \
+    libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 \
+    libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 \
+    libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2 \
+    xvfb dumb-init \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV NODE_ENV=production \
+    PYTHONUNBUFFERED=1 \
+    ANTIGRAVITY_DATA_DIR=/var/data/antigravity \
+    CHROME_PATH=/usr/bin/chromium
+
+# Create isolated non-root system user
+RUN groupadd -g 1001 antigravity && \
+    useradd -u 1001 -g antigravity -m -s /bin/bash antigravity && \
+    mkdir -p /var/data/antigravity/brain /app && \
+    chown -R antigravity:antigravity /var/data/antigravity /app
+
+WORKDIR /app
+COPY --chown=antigravity:antigravity requirements.txt* ./
+RUN if [ -f requirements.txt ]; then pip install --no-cache-dir --break-system-packages -r requirements.txt; fi
+COPY --chown=antigravity:antigravity . /app
+
+USER antigravity
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:8080/healthz || exit 1
+
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+CMD ["python3", "integrations/whatsapp_gateway.py"]
+```
+
+---
+
+### 16.3 Supported Cloud Providers & Step-by-Step Deployment
+
+#### Google Cloud Platform (GCP)
+GCP provides the premier environment for Antigravity, particularly via **Google Cloud Run** and **Google Kubernetes Engine (GKE)**.
+
+> ⚡ **Cloud Run Production Optimization**
+>
+> When deploying long-running agent reasoning loops to Cloud Run, by default Cloud Run throttles the CPU whenever an active HTTP request is not actively transferring bytes. You **must** disable CPU throttling:
+> ```bash
+> gcloud run deploy antigravity-agent \
+>   --image gcr.io/$PROJECT_ID/antigravity-agent:latest \
+>   --platform managed \
+>   --region us-central1 \
+>   --no-cpu-throttling \
+>   --min-instances 1 \
+>   --max-instances 10 \
+>   --memory 2Gi \
+>   --cpu 2 \
+>   --set-secrets="GOOGLE_API_KEY=antigravity-key:latest" \
+>   --allow-unauthenticated
+> ```
+> The `--no-cpu-throttling` flag guarantees that background timers, scheduled cron tasks, and multi-step reasoning swarms continue executing unhindered between incoming client requests.
+
+#### Amazon Web Services (AWS)
+On AWS, deploy using **AWS ECS on Fargate** combined with an **Amazon EFS (Elastic File System)** volume mount:
+1. **Container Definition**: Push the container image to Amazon ECR. Configure task definition with 2 vCPUs and 4 GB RAM.
+2. **EFS Persistent Mount**: Map an EFS Access Point to `/var/data/antigravity/brain`. This ensures that multiple Fargate tasks share the knowledge repository and transcripts persist across task updates.
+3. **AWS Secrets Manager**: Inject API keys and bot tokens securely using the `secrets` block in the ECS task definition.
+
+#### Microsoft Azure
+On Azure, **Azure Container Apps (ACA)** provides the ideal serverless container platform:
+1. Built on Kubernetes and Envoy, supporting automatic HTTPS and microservice service discovery.
+2. **KEDA Autoscaling**: Scale agent container replicas from 0 to $N$ based on queue length in an Azure Service Bus or RabbitMQ queue.
+
+---
+
+### 16.4 Supported Developer Hosting Platforms & Websites
+For startups and engineering teams seeking rapid deployment without managing Kubernetes clusters, several modern hosting platforms offer turnkey support for containerized Antigravity agents.
+
+| Platform | Deployment Type | Persistent Storage | Streaming / WebSockets | Best For |
+| :--- | :--- | :--- | :--- | :--- |
+| **GCP Cloud Run** | Serverless Container | Cloud Storage / NFS | Supported (HTTP/2 & WS) | Enterprise Google ecosystem, zero-idle cost |
+| **Fly.io** | Firecracker microVM | Native NVMe Volumes | Ultra-low latency edge WS | Global stateful agents, browser subagents |
+| **Railway.app** | Git-driven Container | Attached persistent volume | Supported natively | Fast setup, zero-devops, private Redis mesh |
+| **Render.com** | Web Service / Worker | Persistent Disks (1–1000 GB) | Supported | Straightforward background workers & cron |
+| **Hugging Face** | Docker / Gradio Space | Ephemeral / Hub Sync | Supported | Public demos, open-source community showcases |
+| **Vercel / Netlify** | Serverless Frontend | S3 / External API | SSE streaming from backend | Decoupled Next.js / Vue agent user interfaces |
+
+#### Railway.app Deployment
+Railway provides the fastest path to a production agent cluster with an integrated Redis queue:
+1. Connect your GitHub repository to Railway.
+2. In the Railway project canvas, add a **Redis** database and an **Empty Service**.
+3. Point the service to `deploy/Dockerfile`.
+4. Under **Variables**, configure:
+   - `GOOGLE_API_KEY`: Your Gemini / Antigravity credentials.
+   - `REDIS_URL`: Reference the internal Redis variable (`${REDIS.REDIS_URL}`).
+   - `TELEGRAM_BOT_TOKEN` and `WHATSAPP_API_TOKEN`.
+5. Under **Volumes**, attach a persistent volume mounted at `/var/data/antigravity/brain`.
+6. Railway automatically triggers builds on every `git push`, applies rolling zero-downtime deployments, and provides a managed `*.up.railway.app` HTTPS domain.
+
+#### Fly.io Edge MicroVMs
+Fly.io runs applications inside lightweight **Firecracker microVMs** across 30+ global edge regions. This architecture is exceptionally well-suited for Antigravity:
+- MicroVMs boot in milliseconds and provide true Linux kernel hardware virtualization.
+- Attached NVMe volumes provide sub-millisecond disk access for agent memory and artifact lookups.
+
+Deploy in two simple commands:
+```bash
+# Create persistent volume for agent brain in Ashburn (iad)
+fly volumes create antigravity_brain_vol --region iad --size 10
+
+# Deploy container using fly.toml
+fly deploy --config deploy/fly.toml
+```
+
+#### Hugging Face Spaces
+For developer showcases and public agent playgrounds, Hugging Face Spaces provides free container hosting:
+1. Create a new Space with the **Docker** SDK selected.
+2. Configure `README.md` with the metadata header:
+```yaml
+---
+title: Antigravity Autonomous Agent
+emoji: 🚀
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 8080
+---
+```
+3. Add `GOOGLE_API_KEY` to the Space's **Settings → Repository Secrets**.
+4. Hugging Face automatically builds the container and provides an embeddable public URL.
+
+#### Decoupled Frontend Architecture: Vercel & Netlify
+When building full-stack applications powered by Antigravity, avoid running heavy agent tool execution inside serverless Vercel or Netlify functions due to standard execution timeouts (15–60 seconds). Instead, adopt the **Decoupled Edge Pattern**:
+
+> 🌐 **Decoupled Edge Frontend Pattern**
+>
+> 1. **Frontend (Vercel / Netlify)**: A sleek Next.js or Vite web app renders chat UI, thought progress bars, and file previews.
+> 2. **Edge Router**: Sends user queries to the persistent Antigravity backend on Cloud Run or Fly.io.
+> 3. **Server-Sent Events (SSE)**: The Antigravity backend streams reasoning steps (`response.thoughts`), tool executions, and artifact diffs back to the browser in real time.
+> 4. **Decoupled Scale**: The frontend scales instantly across global CDNs, while the agent backend executes complex multi-minute workflows safely without premature function timeouts.
+
+---
+
+### 16.5 Production Sandboxing, Observability & Cost Governance
+
+#### Sandboxing Untrusted Agent Operations
+When deploying agents that write and execute code autonomously in response to user prompts, cloud host security is paramount:
+- **Container Hardening**: Drop all Linux capabilities with `--cap-drop=ALL` and set `security_opt = ["no-new-privileges:true"]`.
+- **Kernel Isolation with gVisor**: On GKE or self-hosted Kubernetes, run agent pods using the `gVisor` (`runsc`) container runtime class. gVisor intercepts all system calls in user space, preventing kernel exploit escapes.
+- **Network Egress Restrictions**: Block access to the cloud metadata service IP (`169.254.169.254`) so the agent cannot introspect instance IAM roles.
+
+#### Health Checks & Observability
+Implement standard health and metrics endpoints for cloud orchestrators:
+```python
+from fastapi import FastAPI, Response, status
+import os
+
+app = FastAPI()
+
+@app.get("/healthz")
+async def health_check():
+    """Liveness probe: verifies agent worker loop is active."""
+    return {"status": "healthy", "service": "antigravity-cloud"}
+
+@app.get("/readyz")
+async def readiness_check():
+    """Readiness probe: verifies connection to model API & brain storage."""
+    if not os.access("/var/data/antigravity/brain", os.W_OK):
+        return Response(status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+    return {"status": "ready"}
+```
+
+> ⚠️ **Token Spend Caps & Rate Limiting**
+>
+> In a cloud environment, an unchecked multi-agent recursive loop can exhaust API quotas within minutes. Always configure:
+> 1. **Session Token Limit**: Terminate any autonomous agent session exceeding 250,000 tokens with an explanatory error artifact.
+> 2. **Max Tool Execution Depth**: Limit autonomous recursion depth (default: 30 sequential tool calls) to prevent infinite repair loops.
+> 3. **Cloud Budget Alarms**: Set GCP or AWS budget notifications with automated Pub/Sub webhooks to pause agent services if daily spend exceeds thresholds.
+
+---
+
+### 16.6 Engineering Lab Project 6: Zero-to-Production CI/CD Pipeline
+
+> 🛠️ **Engineering Lab Project 6: Automated GitHub Actions Deployment to Cloud Run**
+>
+> Automate end-to-end testing, container building, and deployment to Google Cloud Run whenever changes are merged into the `main` branch.
+>
+> Create `.github/workflows/deploy.yml`:
+> ```yaml
+> name: Production Agent Deployment
+>
+> on:
+>   push:
+>     branches: [ main ]
+>
+> jobs:
+>   deploy:
+>     runs-on: ubuntu-latest
+>     steps:
+>       - name: Checkout Codebase
+>         uses: actions/checkout@v4
+>
+>       - name: Authenticate to Google Cloud
+>         uses: google-github-actions/auth@v2
+>         with:
+>           credentials_json: ${{ secrets.GCP_SA_KEY }}
+>
+>       - name: Set up Cloud SDK
+>         uses: google-github-actions/setup-gcloud@v2
+>
+>       - name: Authorize Docker Push
+>         run: gcloud auth configure-docker
+>
+>       - name: Build & Push Container Image
+>         run: |
+>           docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/antigravity-agent:${{ github.sha }} -f deploy/Dockerfile .
+>           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/antigravity-agent:${{ github.sha }}
+>
+>       - name: Deploy to Cloud Run
+>         run: |
+>           gcloud run deploy antigravity-agent \
+>             --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/antigravity-agent:${{ github.sha }} \
+>             --region us-central1 \
+>             --platform managed \
+>             --no-cpu-throttling \
+>             --set-secrets="GOOGLE_API_KEY=antigravity-key:latest"
+> ```
+
+---
+
 # Appendices
 
 ## Appendix A: Slash Command Quick Reference

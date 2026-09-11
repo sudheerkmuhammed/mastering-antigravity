@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  antigravity-agent:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: antigravity-core
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - ANTIGRAVITY_ENV=production
+      - REDIS_URL=redis://redis-queue:6379/0
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - WHATSAPP_API_TOKEN=${WHATSAPP_API_TOKEN}
+      - WHATSAPP_PHONE_NUMBER_ID=${WHATSAPP_PHONE_NUMBER_ID}
+      - WHATSAPP_VERIFY_TOKEN=${WHATSAPP_VERIFY_TOKEN}
+    volumes:
+      - agent-brain:/var/data/antigravity/brain
+      - workspace-code:/app/workspace
+    depends_on:
+      - redis-queue
+    networks:
+      - antigravity-mesh
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  redis-queue:
+    image: redis:7-alpine
+    container_name: antigravity-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - antigravity-mesh
+
+networks:
+  antigravity-mesh:
+    driver: bridge
+
+volumes:
+  agent-brain:
+  workspace-code:
+  redis-data:

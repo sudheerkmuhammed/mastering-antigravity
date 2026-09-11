@@ -13,7 +13,7 @@
 **Google Antigravity (AGY)** is an AI-first software engineering ecosystem where autonomous agents act as true peer engineers. This repository contains the complete book manuscript, typeset editions, and runnable integration suite.
 
 ### Available Formats
-* 📕 **[Download PDF](mastering_antigravity.pdf)**: 50-page comprehensive typeset volume with custom callouts, diagrams, and code listings.
+* 📕 **[Download PDF](mastering_antigravity.pdf)**: 57-page comprehensive typeset volume with custom callouts, diagrams, and code listings.
 * 📱 **[Download EPUB](mastering_antigravity.epub)**: E-reader compatible edition with embedded cover art and responsive styling.
 
 ---
@@ -42,12 +42,24 @@
 * **Chapter 13: Enterprise Monorepos & CI/CD** – Domain-partitioned rule architecture, automated GitHub Actions PR review bot.
 * **Chapter 14: The AI Developer's Skill Stack: Thriving in the Agentic Era** – The 6 pillars of modern AI software engineering.
 * **Chapter 15: Interfacing Antigravity: WhatsApp, Telegram & Google Workspace** – Omnichannel gateways, real-time thought streaming, Google Sheets audit ledgers.
+* **Chapter 16: Cloud Deployment, Production Architectures & Hosting Platforms** – Containerizing with multi-stage Dockerfile, Cloud Run, AWS Fargate, Fly.io Firecracker microVMs, Railway.app, Hugging Face Spaces, Vercel edge decoupling, sandboxing, and CI/CD pipelines.
 
 ### Appendices
 * **Appendix A**: Slash Command Quick Reference (`/help`, `/goal`, `/grill-me`, `/learn`, `/schedule`, `/clear`)
 * **Appendix B**: Customization Directory Reference (`.agents/`, `~/.gemini/config/`)
 * **Appendix C**: Keyboard Shortcuts Cheat Sheet
 * **Appendix D**: Production Prompt & Goal Cookbook
+
+---
+
+## ☁️ Cloud Deployment & Infrastructure Suite (`deploy/`)
+
+* [`deploy/Dockerfile`](deploy/Dockerfile): Production-hardened container with non-root security, Chromium, xvfb, and PID 1 signal management.
+* [`deploy/docker-compose.yml`](deploy/docker-compose.yml): Multi-service stack (Antigravity Agent + Redis Queue + Volume persistence).
+* [`deploy/cloudrun-service.yaml`](deploy/cloudrun-service.yaml): Knative/Cloud Run production spec with Secret Manager bindings and disabled CPU throttling.
+* [`deploy/fly.toml`](deploy/fly.toml): Fly.io configuration for persistent global edge Firecracker MicroVMs.
+* [`deploy/railway.json`](deploy/railway.json): One-click continuous deployment specification for Railway.app.
+* [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml): Automated GitHub Actions CI/CD pipeline deploying updates on merge to `main`.
 
 ---
 
