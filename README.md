@@ -43,12 +43,19 @@
 * **Chapter 14: The AI Developer's Skill Stack: Thriving in the Agentic Era** – The 6 pillars of modern AI software engineering.
 * **Chapter 15: Interfacing Antigravity: WhatsApp, Telegram & Google Workspace** – Omnichannel gateways, real-time thought streaming, Google Sheets audit ledgers.
 * **Chapter 16: Cloud Deployment, Production Architectures & Hosting Platforms** – Containerizing with multi-stage Dockerfile, Cloud Run, AWS Fargate, Fly.io Firecracker microVMs, Railway.app, Hugging Face Spaces, Vercel edge decoupling, sandboxing, and CI/CD pipelines.
+* **Chapter 17: Building Applications with Antigravity: From Idea to Production** – The complete AI-first app engineering lifecycle, ATDG framework (`/grill-me`, `/goal`), Vanilla CSS glassmorphic design systems, FastAPI SSE thought streaming, autonomous headless browser subagents, and the TaskStudio AI case study.
 
 ### Appendices
 * **Appendix A**: Slash Command Quick Reference (`/help`, `/goal`, `/grill-me`, `/learn`, `/schedule`, `/clear`)
 * **Appendix B**: Customization Directory Reference (`.agents/`, `~/.gemini/config/`)
 * **Appendix C**: Keyboard Shortcuts Cheat Sheet
 * **Appendix D**: Production Prompt & Goal Cookbook
+
+---
+
+## 💻 Runnable Applications & Case Studies (`examples/`)
+
+* [`examples/taskstudio/`](examples/taskstudio/): Full-stack task workspace (TaskStudio AI) built with semantic HTML5, Vanilla CSS design tokens with dark glassmorphism, modular JavaScript, FastAPI REST/SSE backend streaming Antigravity thoughts, and automated test suite.
 
 ---
 

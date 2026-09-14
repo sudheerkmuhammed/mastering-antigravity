@@ -1229,6 +1229,288 @@ async def readiness_check():
 
 ---
 
+## Chapter 17: Building Applications with Antigravity: From Idea to Production
+
+### 17.1 The AI-First Application Development Paradigm
+
+For decades, software development followed a manual, incremental trajectory: an engineer conceived an architecture, opened an editor, crafted boilerplate file by file, manually verified the browser DOM, and painstakingly resolved runtime regressions. With the rise of simple generative code assistants, developers gained superficial inline autocomplete; yet the fundamental burden of decomposing architectures, maintaining cross-file consistency, and validating execution remained squarely on human shoulders.
+
+Building an application with **Google Antigravity (AGY)** represents a quantum leap into true **AI-First Software Engineering**. In the Antigravity paradigm, the autonomous agent is not an autocomplete widget—it is a tireless, full-stack peer engineer capable of:
+1. **Navigating complex project hierarchies** and maintaining architectural invariants across frontend, backend, database schemas, and configuration roots.
+2. **Decomposing ambiguous product visions** into testable, verifiable units through Acceptance Test-Driven Goals (`/goal`).
+3. **Drafting and vetting formal implementation plans** before touching production files.
+4. **Writing clean, semantic, modern code** adhering to design system rules and performance best practices.
+5. **Autonomously running headless browser subagents** to visually and functionally audit user interfaces, capturing DOM interactions and video recordings.
+6. **Diagnosing and repairing regressions** in a self-healing loop until all acceptance criteria and automated tests pass.
+
+```
+[Vision / Feature Idea]
+        │
+        ▼
+[1. Spec & Requirements] ──> /grill-me (Elicit Edge Cases & Invariants)
+        │
+        ▼
+[2. Architectural Plan]   ──> implementation_plan.md (Review & Approve)
+        │
+        ▼
+[3. Scaffolding & Code]   ──> Multi-File Generation (Vanilla CSS + HTML5 + SDK)
+        │
+        ▼
+[4. Autonomous Verify]   ──> Headless Browser Subagents + Pytest Test Suites
+        │
+        ▼
+[5. Production Release]   ──> Docker Containerization & Cloud Run / Edge Host
+```
+
+---
+
+### 17.2 Scaffolding & Specifying: The ATDG Framework
+
+The single most common mistake in AI-assisted development is providing vague, underspecified instructions such as *"build me a task manager app"*. An autonomous agent given an unbounded prompt will make arbitrary architectural assumptions that inevitably require costly refactoring.
+
+In Antigravity, every high-quality application begins with the **ATDG (Acceptance Test-Driven Goal)** framework introduced in Chapter 4:
+
+#### Step 1: Elicit Underspecified Requirements with `/grill-me`
+Before writing code, trigger an architectural interview using the `/grill-me` slash command:
+```
+/grill-me I want to build a real-time Kanban task management application called "TaskStudio AI".
+It needs a dark-mode glassmorphic interface, a live Antigravity agent telemetry feed showing
+agent thoughts and tool calls, and full task CRUD. What architectural decisions must we resolve?
+```
+The agent responds with targeted clarifying questions:
+* *State Management*: Will tasks persist in memory, LocalStorage, or via a persistent REST backend?
+* *Streaming Protocol*: Should the agent thought stream use WebSockets, Long-Polling, or Server-Sent Events (SSE)?
+* *Design System*: Are we using external CSS frameworks or a zero-dependency Vanilla CSS token architecture?
+
+#### Step 2: Establish Project Rules in `.agents/rules/`
+Lock down architectural invariants in the repository's customization directory so the agent adheres to your engineering standards on every turn:
+
+Create `.agents/rules/web-app-standards.md`:
+```markdown
+---
+description: Application development standards for frontend and backend
+globs: ["**/*.html", "**/*.css", "**/*.js", "**/*.py"]
+alwaysApply: true
+---
+
+# Web Application Development Standards
+
+## 1. Frontend Core
+- Use semantic HTML5 elements (`<header>`, `<main>`, `<section>`, `<aside>`) with explicit accessibility attributes.
+- Use Vanilla CSS for styling. Avoid heavyweight utility frameworks unless explicitly mandated.
+- Structure design tokens using CSS Custom Properties (`--bg-base`, `--accent-primary`, `--border-subtle`).
+- Provide rich, modern aesthetics: sleek dark palette, subtle glassmorphism (`backdrop-filter: blur()`), glowing borders, and 60fps micro-animations.
+- Use responsive layouts powered by CSS Grid and Flexbox without hardcoded pixel widths.
+
+## 2. Telemetry & Streaming
+- Client-to-server agent communication must utilize Server-Sent Events (SSE) for one-way thought streaming.
+- Decouple agent reasoning loops from HTTP request lifecycles to prevent premature gateway timeouts.
+```
+
+#### Step 3: Launch the Autonomous Goal with `/goal`
+```
+/goal Objective: Scaffold and implement "TaskStudio AI" full-stack web application.
+Acceptance Criteria:
+1. Frontend: High-contrast dark glassmorphic UI with responsive 4-lane Kanban board (To Do, In Progress, Review, Completed).
+2. Agent Telemetry: Live Server-Sent Events (SSE) feed displaying agent thoughts, tool invocations, and diff previews.
+3. Backend: FastAPI server delivering static assets, task REST endpoints, and SSE stream.
+4. Testing: All tests in test_app.py must pass with exit code 0.
+```
+
+---
+
+### 17.3 Designing a Modern, High-Performance UI (Vanilla CSS + HTML5)
+
+Modern web browsers possess incredible native layout and styling capabilities. By leveraging **Vanilla CSS** and native web APIs, your applications achieve instant load times, zero build tool complexity, and maximum flexibility.
+
+#### The Three Visual Invariants of Premium AI Interfaces
+1. **Harmonious Color Space & Dark Mode Elevation**:
+   Instead of pure black (`#000000`) and plain gray, employ a tailored slate/navy palette with layered elevations:
+   ```css
+   :root {
+     --bg-base: #0a0d14;              /* Deep background canvas */
+     --bg-surface: #111726;           /* Card container surface */
+     --bg-surface-elevated: #182238;  /* Hover / active card state */
+     --bg-glass: rgba(17, 23, 38, 0.75); /* Translucent glass layer */
+     --border-subtle: rgba(255, 255, 255, 0.07);
+     --border-glow: rgba(129, 140, 248, 0.35);
+     --accent-primary: #6366f1;       /* Indigo accent */
+     --accent-glow: rgba(99, 102, 241, 0.25);
+     --accent-success: #10b981;       /* Emerald status */
+   }
+   ```
+2. **Glassmorphism with Hardware Acceleration**:
+   Achieve depth and elegance with hardware-accelerated backdrop blur:
+   ```css
+   .card-glass {
+     background: var(--bg-glass);
+     backdrop-filter: blur(20px);
+     -webkit-backdrop-filter: blur(20px);
+     border: 1px solid var(--border-subtle);
+     border-radius: 14px;
+     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+   }
+   ```
+3. **Dynamic Micro-Animations & Status Indicators**:
+   Provide visual feedback that the application is alive. A pulsating status dot communicates active agent reasoning:
+   ```css
+   .status-indicator.active {
+     background: var(--accent-success);
+     box-shadow: 0 0 10px var(--accent-success);
+     animation: pulse-glow 1.5s infinite ease-in-out;
+   }
+
+   @keyframes pulse-glow {
+     0%, 100% { opacity: 1; transform: scale(1); }
+     50% { opacity: 0.5; transform: scale(0.9); }
+   }
+   ```
+
+---
+
+### 17.4 The Antigravity Agent Engine & Backend Integration
+
+To power dynamic applications, the backend bridges user interactions with the Antigravity Agent runtime. Rather than forcing the client to wait for a monolithic response, the backend streams the agent's real-time reasoning loop over **Server-Sent Events (SSE)**.
+
+```
+[Browser Client (EventSource)]
+         │
+         │ GET /api/agent/stream?goal=...
+         ▼
+[FastAPI Server Engine]
+         │
+         │ async with Agent(config) as agent:
+         ▼
+[Antigravity Python SDK]
+   ├─ Yields thought: "Inspecting codebase..."  ──> SSE [event: thought] ──> Client renders in Thought Feed
+   ├─ Tool Call: grep_search / replace_file     ──> SSE [event: tool_call] ──> Client renders in Diff Viewer
+   ├─ Action: Decomposed task item created       ──> SSE [event: task_created] ──> Kanban adds card to board
+   └─ Complete: Session fulfilled               ──> SSE [event: complete] ──> Status resets to Idle
+```
+
+#### The SSE Event Stream Protocol
+By emitting distinct SSE event types, the frontend seamlessly renders diverse telemetry data without polling:
+
+```python
+# Streaming endpoint in FastAPI
+from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
+import json, asyncio
+
+app = FastAPI()
+
+async def stream_agent_telemetry(goal: str):
+    # 1. Thought delta
+    yield f"event: thought\ndata: {json.dumps({'text': 'Analyzing project requirements...'})}\n\n"
+    await asyncio.sleep(0.5)
+
+    # 2. Tool invocation event
+    yield f"event: tool_call\ndata: {json.dumps({'name': 'grep_search', 'args': {'Query': 'test'}})}\n\n"
+    await asyncio.sleep(0.5)
+
+    # 3. Action event (e.g., dynamically created task card)
+    yield f"event: task_created\ndata: {json.dumps({'id': 'TSK-201', 'title': 'Refactor CSS tokens'})}\n\n"
+    await asyncio.sleep(0.5)
+
+    # 4. Completion signal
+    yield f"event: complete\ndata: {json.dumps({'status': 'done'})}\n\n"
+
+@app.get("/api/agent/stream")
+async def agent_stream(goal: str):
+    return StreamingResponse(
+        stream_agent_telemetry(goal),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
+    )
+```
+
+On the client side, the standard browser `EventSource` API listens to these named events with zero dependencies:
+```javascript
+const eventSource = new EventSource(`/api/agent/stream?goal=${encodeURIComponent(prompt)}`);
+
+eventSource.addEventListener('thought', (e) => {
+  const payload = JSON.parse(e.data);
+  appendThoughtItem('THOUGHT', payload.text);
+});
+
+eventSource.addEventListener('tool_call', (e) => {
+  const payload = JSON.parse(e.data);
+  updateDiffViewer(payload.name, payload.diff);
+});
+
+eventSource.addEventListener('complete', () => {
+  setAgentStatus('idle');
+  eventSource.close();
+});
+```
+
+---
+
+### 17.5 Autonomous Verification: Browser Subagents & Visual Testing
+
+Code generation is only half the engineering equation; verification is what transforms code into reliable software. In Antigravity, verification occurs across two complementary dimensions:
+
+1. **Deterministic Unit & Contract Tests**: Fast, headless Python or Node tests validating API payloads, route status codes, and invariant assertions (e.g., `pytest test_app.py`).
+2. **Autonomous Headless Browser Subagents**: The Antigravity IDE and CLI feature built-in browser subagents capable of navigating web applications, clicking buttons, inspecting the rendered DOM, capturing screenshots, and recording WebP videos.
+
+> 🔍 **The Browser Subagent Verification Loop**
+>
+> When verifying a newly created web application, Antigravity executes an automated browser test task:
+> 1. Boots the application server in the background sandbox.
+> 2. Dispatches a browser subagent: `"Open http://localhost:8000, verify the Kanban board renders 4 lanes, click the '+ New Task' button, submit a new task, and verify it appears in the 'To Do' column"`.
+> 3. The subagent inspects the DOM elements, clicks the submit button, records a visual WebP session artifact, and reports back.
+> 4. If an element fails to render or an unexpected JavaScript console error occurs, Antigravity reads the console log, locates the bug in `app.js` or `style.css`, applies a targeted replacement, and re-runs the browser subagent until 100% verified.
+
+---
+
+### 17.6 Step-by-Step Blueprint & Runnable Case Study: TaskStudio AI
+
+To demonstrate the power of this methodology, this book includes a complete, fully functioning companion application in the `examples/taskstudio/` repository directory:
+
+```
+examples/taskstudio/
+├── index.html     # Semantic HTML5 layout with Kanban lanes and live telemetry console
+├── style.css      # Vanilla CSS design system (dark glassmorphism, glowing badges)
+├── app.js         # Reactive client state, drag-and-drop, and SSE stream consumer
+├── server.py      # FastAPI backend with task REST API and Antigravity SSE stream
+├── test_app.py    # Automated test suite verifying assets, DOM selectors, and API
+└── README.md      # Setup, deployment, and testing instructions
+```
+
+#### Application Architecture:
+* **Presentation Layer**: Semantic HTML5 with an accessible grid separating the 4-lane sprint canvas from the real-time agent telemetry console.
+* **Style Engine**: Pure Vanilla CSS featuring 12 semantic tokens, fluid typography (`Plus Jakarta Sans` and `JetBrains Mono`), and hardware-accelerated translucent blur surfaces.
+* **Agent Gateway**: High-throughput asynchronous FastAPI server supporting both offline standalone simulation and live Antigravity Python SDK orchestration.
+
+```bash
+# Run the automated test suite
+cd examples/taskstudio
+python3 -m unittest test_app.py
+# Ran 5 tests in 0.001s - OK
+
+# Start the full-stack server
+python3 server.py
+# INFO: Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+```
+
+---
+
+### 17.7 Engineering Lab Project 7: Greenfield App Sprint
+
+> 🛠️ **Engineering Lab Project 7: Building and Deploying a Custom Antigravity Web App**
+>
+> **Objective**: Use Antigravity to design, scaffold, test, and containerize a new real-time application from scratch.
+>
+> **Specifications**:
+> 1. **Initialize Workspace Rules**: Create `.agents/rules/app-guidelines.md` defining your chosen tech stack (e.g., Vanilla CSS + HTML5 + FastAPI), color palette, and architectural boundaries.
+> 2. **Execute Requirements Interview**: Run `/grill-me` to elicit edge cases regarding offline caching, input validation, and error states.
+> 3. **Draft Implementation Plan**: Have the agent generate `implementation_plan.md` detailing the component hierarchy, REST endpoints, and test cases.
+> 4. **Execute Autonomous Goal**: Run `/goal` to generate the frontend and backend files.
+> 5. **Verify with Automated Tests**: Write a contract test suite verifying that all static files and API routes respond with status 200.
+> 6. **Package for Cloud Release**: Write a multi-stage `Dockerfile` following the security best practices from Chapter 16 (non-root user, health check probes) and verify container startup.
+
+---
+
 # Appendices
 
 ## Appendix A: Slash Command Quick Reference

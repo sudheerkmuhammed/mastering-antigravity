@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TaskStudio AI - Real-time autonomous task workspace powered by Google Antigravity">
+  <title>TaskStudio AI — Powered by Antigravity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Navigation Bar -->
+    <header class="navbar" id="main-nav">
+      <div class="nav-brand">
+        <div class="brand-badge">
+          <span class="pulse-dot"></span>
+          <span class="brand-icon">⚡</span>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">TaskStudio</span>
+          <span class="brand-subtitle">Antigravity Autonomous Engine</span>
+        </div>
+      </div>
+      
+      <div class="nav-actions">
+        <div class="agent-status-badge" id="agent-status-indicator">
+          <span class="status-indicator idle"></span>
+          <span class="status-label" id="agent-status-text">Agent Idle</span>
+        </div>
+        <button class="btn btn-secondary" id="btn-refresh" title="Refresh Board">
+          <span class="icon">↻</span> Refresh
+        </button>
+        <button class="btn btn-primary" id="btn-new-task">
+          <span class="icon">+</span> New Task
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace Grid -->
+    <main class="workspace-grid">
+      <!-- Left Column: Kanban Board -->
+      <section class="board-column" aria-label="Task Management Columns">
+        <div class="board-header">
+          <div>
+            <h1 class="page-title">Project Sprint Canvas</h1>
+            <p class="page-subtitle">Track, decompose, and autonomously execute project deliverables.</p>
+          </div>
+          <div class="board-metrics">
+            <span class="metric-chip" id="metric-total">Total: 0</span>
+            <span class="metric-chip active" id="metric-completed">Done: 0</span>
+          </div>
+        </div>
+
+        <div class="kanban-lanes" id="kanban-lanes">
+          <!-- Backlog Lane -->
+          <div class="lane" data-lane="todo">
+            <div class="lane-header">
+              <div class="lane-title-group">
+                <span class="lane-badge badge-todo"></span>
+                <h2 class="lane-heading">To Do</h2>
+              </div>
+              <span class="lane-count" id="count-todo">0</span>
+            </div>
+            <div class="lane-cards" id="cards-todo">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- In Progress Lane -->
+          <div class="lane" data-lane="in-progress">
+            <div class="lane-header">
+              <div class="lane-title-group">
+                <span class="lane-badge badge-inprogress"></span>
+                <h2 class="lane-heading">In Progress</h2>
+              </div>
+              <span class="lane-count" id="count-in-progress">0</span>
+            </div>
+            <div class="lane-cards" id="cards-in-progress">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Review Lane -->
+          <div class="lane" data-lane="review">
+            <div class="lane-header">
+              <div class="lane-title-group">
+                <span class="lane-badge badge-review"></span>
+                <h2 class="lane-heading">Review & QA</h2>
+              </div>
+              <span class="lane-count" id="count-review">0</span>
+            </div>
+            <div class="lane-cards" id="cards-review">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Completed Lane -->
+          <div class="lane" data-lane="done">
+            <div class="lane-header">
+              <div class="lane-title-group">
+                <span class="lane-badge badge-done"></span>
+                <h2 class="lane-heading">Completed</h2>
+              </div>
+              <span class="lane-count" id="count-done">0</span>
+            </div>
+            <div class="lane-cards" id="cards-done">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Antigravity Agent Telemetry Console -->
+      <aside class="agent-console" aria-label="Antigravity Live Telemetry">
+        <div class="console-card">
+          <div class="console-header">
+            <div class="console-title-group">
+              <span class="console-icon">🧠</span>
+              <h3 class="console-title">Antigravity Thought Stream</h3>
+            </div>
+            <div class="console-live-tag">
+              <span class="blink-dot"></span> LIVE SSE
+            </div>
+          </div>
+
+          <!-- Agent Goal Input Box -->
+          <div class="goal-input-box">
+            <label for="agent-prompt" class="input-label">Assign Autonomous Objective (/goal):</label>
+            <div class="input-group">
+              <input type="text" id="agent-prompt" class="text-input" placeholder="e.g., Audit project performance and optimize CSS bundles..." />
+              <button class="btn btn-accent" id="btn-run-agent">
+                <span class="icon">🚀</span> Dispatch
+              </button>
+            </div>
+          </div>
+
+          <!-- Live Reasoning Feed -->
+          <div class="telemetry-feed" id="telemetry-feed" tabindex="0" aria-live="polite">
+            <div class="telemetry-empty">
+              <span class="empty-icon">📡</span>
+              <p>Awaiting agent dispatch. Assign an objective above to view real-time thoughts, tool calls, and plan generation.</p>
+            </div>
+          </div>
+
+          <!-- Execution Artifacts & Tool Trace Box -->
+          <div class="trace-box" id="trace-box">
+            <div class="trace-header">
+              <span class="trace-label">Active Tool Call / Diff</span>
+              <span class="trace-meta" id="trace-meta">No active tool</span>
+            </div>
+            <pre class="trace-code" id="trace-code"><code>// Tool telemetry output will appear here...</code></pre>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Modal for Creating / Editing Task -->
+    <div class="modal-backdrop hidden" id="task-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title" id="modal-title">Create New Task</h3>
+          <button class="btn-close" id="btn-close-modal" aria-label="Close modal">&times;</button>
+        </div>
+        <form id="task-form" class="modal-form">
+          <div class="form-group">
+            <label for="task-title-input" class="form-label">Task Title</label>
+            <input type="text" id="task-title-input" class="form-input" required placeholder="e.g., Implement dark-mode glassmorphism theme" />
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="task-priority-input" class="form-label">Priority</label>
+              <select id="task-priority-input" class="form-select">
+                <option value="high">🔥 High</option>
+                <option value="medium" selected>⚡ Medium</option>
+                <option value="low">🌱 Low</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="task-lane-input" class="form-label">Lane</label>
+              <select id="task-lane-input" class="form-select">
+                <option value="todo" selected>To Do</option>
+                <option value="in-progress">In Progress</option>
+                <option value="review">Review</option>
+                <option value="done">Completed</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="task-desc-input" class="form-label">Description & Acceptance Criteria</label>
+            <textarea id="task-desc-input" class="form-textarea" rows="3" placeholder="Specify testable acceptance criteria for this work item..."></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" id="btn-cancel-task">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="btn-save-task">Save Task</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

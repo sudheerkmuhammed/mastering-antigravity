@@ -1520,6 +1520,248 @@ jobs:
 \end{lstlisting}
 \end{labbox}
 
+\chapter{Building Applications with Antigravity: From Idea to Production}
+
+\section{The AI-First Application Development Paradigm}
+For decades, software development followed a manual, incremental trajectory: an engineer conceived an architecture, opened an editor, crafted boilerplate file by file, manually verified the browser DOM, and painstakingly resolved runtime regressions. With the rise of simple generative code assistants, developers gained superficial inline autocomplete; yet the fundamental burden of decomposing architectures, maintaining cross-file consistency, and validating execution remained squarely on human shoulders.
+
+Building an application with \textbf{Google Antigravity (AGY)} represents a quantum leap into true \textbf{AI-First Software Engineering}. In the Antigravity paradigm, the autonomous agent is not an autocomplete widget---it is a tireless, full-stack peer engineer capable of:
+\begin{enumerate}
+    \item \textbf{Navigating complex project hierarchies} and maintaining architectural invariants across frontend, backend, database schemas, and configuration roots.
+    \item \textbf{Decomposing ambiguous product visions} into testable, verifiable units through Acceptance Test-Driven Goals (\texttt{/goal}).
+    \item \textbf{Drafting and vetting formal implementation plans} before touching production files.
+    \item \textbf{Writing clean, semantic, modern code} adhering to design system rules and performance best practices.
+    \item \textbf{Autonomously running headless browser subagents} to visually and functionally audit user interfaces, capturing DOM interactions and video recordings.
+    \item \textbf{Diagnosing and repairing regressions} in a self-healing loop until all acceptance criteria and automated tests pass.
+\end{enumerate}
+
+\begin{center}
+\textbf{[Vision / Feature Idea]} $\longrightarrow$ \textbf{[/grill-me Spec]} $\longrightarrow$ \textbf{[Plan Approval]} $\longrightarrow$ \textbf{[Autonomous Scaffolding]} $\longrightarrow$ \textbf{[Browser Subagent Audit]} $\longrightarrow$ \textbf{[Production Release]}
+\end{center}
+
+\begin{conceptbox}[The Six-Phase Antigravity App Lifecycle]
+Building a complete application with Antigravity flows through six deterministic gates:
+\begin{enumerate}
+    \item \textbf{Phase 1: Spec \& Elicitation}: Use \texttt{/grill-me} to surface unstated requirements, state persistence needs, and design tokens.
+    \item \textbf{Phase 2: Architectural Plan}: Generate and approve \texttt{implementation\_plan.md} outlining files, component hierarchy, and test contracts.
+    \item \textbf{Phase 3: Scaffolding}: Generate semantic HTML5, Vanilla CSS design system, and backend APIs.
+    \item \textbf{Phase 4: Autonomous Coding}: Implement modular JavaScript, Server-Sent Events (SSE) thought streams, and database models.
+    \item \textbf{Phase 5: Autonomous Verification}: Execute headless browser subagents to click, navigate, and record UI state, alongside automated unit suites.
+    \item \textbf{Phase 6: Production Delivery}: Package multi-stage Docker container and deploy to Cloud Run or edge microVMs.
+\end{enumerate}
+\end{conceptbox}
+
+\section{Scaffolding \& Specifying: The ATDG Framework}
+The single most common pitfall in AI-assisted development is providing vague, underspecified instructions such as \textit{``build me a task manager app''}. An autonomous agent given an unbounded prompt will make arbitrary architectural assumptions that inevitably require costly refactoring.
+
+In Antigravity, every high-quality application begins with the \textbf{ATDG (Acceptance Test-Driven Goal)} framework:
+
+\subsection{Elicit Underspecified Requirements with \texttt{/grill-me}}
+Before writing code, trigger an architectural interview using the \texttt{/grill-me} slash command:
+\begin{lstlisting}[language=bash]
+/grill-me I want to build a real-time Kanban task management application called "TaskStudio AI".
+It needs a dark-mode glassmorphic interface, a live Antigravity agent telemetry feed showing
+agent thoughts and tool calls, and full task CRUD. What architectural decisions must we resolve?
+\end{lstlisting}
+
+The agent responds with targeted clarifying questions:
+\begin{itemize}
+    \item \textbf{State Management}: Will tasks persist in memory, LocalStorage, or via a persistent REST backend?
+    \item \textbf{Streaming Protocol}: Should the agent thought stream use WebSockets, Long-Polling, or Server-Sent Events (SSE)?
+    \item \textbf{Design System}: Are we using external CSS frameworks or a zero-dependency Vanilla CSS token architecture?
+\end{itemize}
+
+\subsection{Establishing Project Rules in \texttt{.agents/rules/}}
+Lock down architectural invariants in the repository's customization directory so the agent adheres to your engineering standards on every turn:
+
+\begin{lstlisting}[language=bash]
+# .agents/rules/web-app-standards.md
+---
+description: Application development standards for frontend and backend
+globs: ["**/*.html", "**/*.css", "**/*.js", "**/*.py"]
+alwaysApply: true
+---
+
+# Web Application Development Standards
+
+## 1. Frontend Core
+- Use semantic HTML5 elements (<header>, <main>, <section>, <aside>) with explicit accessibility attributes.
+- Use Vanilla CSS for styling. Avoid heavyweight utility frameworks unless explicitly mandated.
+- Structure design tokens using CSS Custom Properties (--bg-base, --accent-primary, --border-subtle).
+- Provide rich, modern aesthetics: sleek dark palette, subtle glassmorphism (backdrop-filter: blur()), glowing borders, and 60fps micro-animations.
+- Use responsive layouts powered by CSS Grid and Flexbox without hardcoded pixel widths.
+
+## 2. Telemetry & Streaming
+- Client-to-server agent communication must utilize Server-Sent Events (SSE) for one-way thought streaming.
+- Decouple agent reasoning loops from HTTP request lifecycles to prevent premature gateway timeouts.
+\end{lstlisting}
+
+\subsection{Launching the Autonomous Goal with \texttt{/goal}}
+\begin{promptbox}[Autonomous Greenfield App Scaffolding]
+/goal Objective: Scaffold and implement "TaskStudio AI" full-stack web application.
+Acceptance Criteria:
+1. Frontend: High-contrast dark glassmorphic UI with responsive 4-lane Kanban board (To Do, In Progress, Review, Completed).
+2. Agent Telemetry: Live Server-Sent Events (SSE) feed displaying agent thoughts, tool invocations, and diff previews.
+3. Backend: FastAPI server delivering static assets, task REST endpoints, and SSE stream.
+4. Testing: All tests in \texttt{test\_app.py} must pass with exit code 0.
+\end{promptbox}
+
+\section{Designing a Modern, High-Performance UI (Vanilla CSS + HTML5)}
+Modern web browsers possess incredible native layout and styling capabilities. By leveraging \textbf{Vanilla CSS} and native web APIs, your applications achieve instant load times, zero build tool complexity, and maximum flexibility.
+
+\subsection{The Three Visual Invariants of Premium AI Interfaces}
+\begin{enumerate}
+    \item \textbf{Harmonious Color Space \& Dark Mode Elevation}: Instead of harsh pure black (\texttt{\#000000}) and plain gray, employ a tailored slate/navy palette with layered elevations (\texttt{--bg-base: \#0a0d14}, \texttt{--bg-surface: \#111726}, \texttt{--bg-glass: rgba(17, 23, 38, 0.75)}).
+    \item \textbf{Glassmorphism with Hardware Acceleration}: Achieve depth and elegance with hardware-accelerated backdrop blur:
+\begin{lstlisting}[language=bash]
+.card-glass {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+\end{lstlisting}
+    \item \textbf{Dynamic Micro-Animations \& Status Indicators}: A pulsating status dot communicates active agent reasoning:
+\begin{lstlisting}[language=bash]
+.status-indicator.active {
+  background: var(--accent-success);
+  box-shadow: 0 0 10px var(--accent-success);
+  animation: pulse-glow 1.5s infinite ease-in-out;
+}
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.9); }
+}
+\end{lstlisting}
+\end{enumerate}
+
+\section{The Antigravity Agent Engine \& Backend Integration}
+To power dynamic applications, the backend bridges user interactions with the Antigravity Agent runtime. Rather than forcing the client to wait for a monolithic response, the backend streams the agent's real-time reasoning loop over \textbf{Server-Sent Events (SSE)}.
+
+\begin{lstlisting}[language=Python]
+from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
+import json, asyncio
+
+app = FastAPI()
+
+async def stream_agent_telemetry(goal: str):
+    # 1. Thought delta
+    yield f"event: thought\ndata: {json.dumps({'text': 'Analyzing project requirements...'})}\n\n"
+    await asyncio.sleep(0.5)
+
+    # 2. Tool invocation event
+    yield f"event: tool_call\ndata: {json.dumps({'name': 'grep_search', 'args': {'Query': 'test'}})}\n\n"
+    await asyncio.sleep(0.5)
+
+    # 3. Action event (e.g., dynamically created task card)
+    yield f"event: task_created\ndata: {json.dumps({'id': 'TSK-201', 'title': 'Refactor CSS tokens'})}\n\n"
+    await asyncio.sleep(0.5)
+
+    # 4. Completion signal
+    yield f"event: complete\ndata: {json.dumps({'status': 'done'})}\n\n"
+
+@app.get("/api/agent/stream")
+async def agent_stream(goal: str):
+    return StreamingResponse(
+        stream_agent_telemetry(goal),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
+    )
+\end{lstlisting}
+
+On the client side, the standard browser \texttt{EventSource} API listens to these named events with zero dependencies:
+\begin{lstlisting}[language=Python]
+const eventSource = new EventSource(`/api/agent/stream?goal=${encodeURIComponent(prompt)}`);
+
+eventSource.addEventListener('thought', (e) => {
+  const payload = JSON.parse(e.data);
+  appendThoughtItem('THOUGHT', payload.text);
+});
+
+eventSource.addEventListener('tool_call', (e) => {
+  const payload = JSON.parse(e.data);
+  updateDiffViewer(payload.name, payload.diff);
+});
+
+eventSource.addEventListener('complete', () => {
+  setAgentStatus('idle');
+  eventSource.close();
+});
+\end{lstlisting}
+
+\section{Autonomous Verification: Browser Subagents \& Visual Testing}
+Code generation is only half the engineering equation; verification is what transforms code into reliable software. In Antigravity, verification occurs across two complementary dimensions:
+\begin{enumerate}
+    \item \textbf{Deterministic Unit \& Contract Tests}: Fast, headless Python or Node tests validating API payloads, route status codes, and invariant assertions (\texttt{pytest test\_app.py}).
+    \item \textbf{Autonomous Headless Browser Subagents}: The Antigravity IDE and CLI feature built-in browser subagents capable of navigating web applications, clicking buttons, inspecting the rendered DOM, capturing screenshots, and recording WebP videos.
+\end{enumerate}
+
+\begin{cautionbox}[Self-Healing Browser Test Loops]
+When verifying a newly created web application, Antigravity executes an automated browser test task:
+\begin{enumerate}
+    \item Boots the application server in the background sandbox.
+    \item Dispatches a browser subagent: \textit{``Open http://localhost:8000, verify the Kanban board renders 4 lanes, click the '+ New Task' button, submit a new task, and verify it appears in the 'To Do' column''}.
+    \item The subagent inspects the DOM elements, clicks the submit button, records a visual WebP session artifact, and reports back.
+    \item If an element fails to render or an unexpected JavaScript console error occurs, Antigravity reads the console log, locates the bug in \texttt{app.js} or \texttt{style.css}, applies a targeted replacement, and re-runs the browser subagent until 100\% verified.
+\end{enumerate}
+\end{cautionbox}
+
+\section{Step-by-Step Blueprint \& Runnable Case Study: TaskStudio AI}
+To demonstrate the power of this methodology, this book includes a complete, fully functioning companion application in the \texttt{examples/taskstudio/} repository directory:
+
+\begin{lstlisting}[language=bash]
+examples/taskstudio/
+|-- index.html     # Semantic HTML5 layout with Kanban lanes and live telemetry console
+|-- style.css      # Vanilla CSS design system (dark glassmorphism, glowing badges)
+|-- app.js         # Reactive client state, drag-and-drop, and SSE stream consumer
+|-- server.py      # FastAPI backend with task REST API and Antigravity SSE stream
+|-- test_app.py    # Automated test suite verifying assets, DOM selectors, and API
+`-- README.md      # Setup, deployment, and testing instructions
+\end{lstlisting}
+
+\begin{table}[htbp]
+\centering
+\caption{TaskStudio AI Architectural Breakdown}
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{Layer} & \textbf{Technology} & \textbf{Engineering Function} \\
+\midrule
+Presentation & HTML5 Semantic & Responsive 4-lane Kanban canvas + Live telemetry feed \\
+Styling & Vanilla CSS & 12 design tokens, dark glassmorphism, 60fps keyframe pulse \\
+Client State & Vanilla JavaScript & Reactive task board, DOM manipulation, SSE event listener \\
+API Gateway & FastAPI & High-throughput REST endpoints + SSE agent stream \\
+Verification & Python Unittest & Static asset assertions, route contract validation \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{lstlisting}[language=bash]
+# Run the automated test suite
+cd examples/taskstudio
+python3 -m unittest test_app.py
+# Ran 5 tests in 0.001s - OK
+
+# Start the full-stack server
+python3 server.py
+# INFO: Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+\end{lstlisting}
+
+\begin{labbox}[Greenfield App Sprint: Build and Deploy Your Own Antigravity App]
+\textbf{Objective}: Use Antigravity to design, scaffold, test, and containerize a new real-time application from scratch.
+
+\begin{enumerate}
+    \item \textbf{Initialize Workspace Rules}: Create \texttt{.agents/rules/app-guidelines.md} defining your chosen tech stack (e.g., Vanilla CSS + HTML5 + FastAPI), color palette, and architectural boundaries.
+    \item \textbf{Execute Requirements Interview}: Run \texttt{/grill-me} to elicit edge cases regarding offline caching, input validation, and error states.
+    \item \textbf{Draft Implementation Plan}: Have the agent generate \texttt{implementation\_plan.md} detailing the component hierarchy, REST endpoints, and test cases.
+    \item \textbf{Execute Autonomous Goal}: Run \texttt{/goal} to generate the frontend and backend files.
+    \item \textbf{Verify with Automated Tests}: Write a contract test suite verifying that all static files and API routes respond with status 200.
+    \item \textbf{Package for Cloud Release}: Write a multi-stage \texttt{Dockerfile} following the security best practices from Chapter 16 (non-root user, health check probes) and verify container startup.
+\end{enumerate}
+\end{labbox}
+
 % =============================================================================
 % BACK MATTER: APPENDICES
 % =============================================================================
